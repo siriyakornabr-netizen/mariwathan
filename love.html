@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เว็บกำลังใจน้องแมวน้อย</title>
+<style>
+    body {
+        font-family: 'Comic Sans MS', cursive;
+        background: linear-gradient(to bottom, #fff0f5, #ffe4e1);
+        text-align: center;
+        padding: 20px;
+    }
+    h1 {
+        color: #ff69b4;
+        margin-bottom: 10px;
+    }
+    button {
+        background-color: #ffb6c1;
+        border: none;
+        padding: 10px 20px;
+        margin: 10px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background-color: #ff91a4;
+    }
+    .heart {
+        position: fixed;
+        bottom: -20px;
+        color: #ff69b4;
+        animation: floatUp 5s linear infinite;
+        font-size: 20px;
+    }
+    @keyframes floatUp {
+        0% {transform: translateY(0);}
+        100% {transform: translateY(-100vh); opacity: 0;}
+    }
+    .memory, .secret, .countdown {
+        background: white;
+        padding: 15px;
+        margin: 15px auto;
+        border-radius: 15px;
+        width: 80%;
+        box-shadow: 0 0 10px rgba(255,182,193,0.5);
+    }
+</style>
+</head>
+<body>
+
+<h1>วันนี้น้องแมวน้อยเค้าเก่งมากแล้วนะ</h1>
+
+<!-- เพลงคลอ -->
+<audio id="bgm" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_bf82466f4f.mp3?filename=beautiful-relaxing-music-112199.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ปุ่มสุ่มกำลังใจ -->
+<button onclick="showMessage()">สุ่มให้กำลังใจ</button>
+<p id="message"></p>
+
+<!-- ความทรงจำ -->
+<div class="memory">
+    <h2>ความทรงจำ</h2>
+    <ul>
+        <li>โดนด่า</li>
+        <li>โดนด่า</li>
+        <li>หนูโดนด่า</li>
+    </ul>
+</div>
+
+<!-- นับถอยหลัง -->
+<div class="countdown">
+    <h2>Everydays 💖</h2>
+    <p>ทุกวันคือวันสำคัญของเรา</p>
+</div>
+
+<!-- ข้อความลับ -->
+<div class="secret">
+    <h2>ข้อความลับ</h2>
+    <button onclick="alert('ถ้าทุกคนเป็นความลับ งั้นเธอนั้นคือหมาของเค้า อะไรอ่ะ555')">กดเพื่อดู</button>
+</div>
+
+<script>
+function showMessage() {
+    document.getElementById("message").innerText = "เธอเป็นน้องแมวน้อย";
+}
+
+// สร้างหัวใจลอย
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 10 + "px";
+    document.body.appendChild(heart);
+
+    setTimeout(() => {
+        heart.remove();
+    }, 5000);
+}
+setInterval(createHeart, 500);
+
+// เพลงคลอเบา ๆ
+document.addEventListener("DOMContentLoaded", function() {
+    const bgm = document.getElementById("bgm");
+    bgm.volume = 0.2; // เสียงเบา
+    bgm.play().catch(() => {
+        // ถ้า autoplay ไม่ได้ ให้กดปุ่มเอง
+        const btn = document.createElement("button");
+        btn.innerText = "▶ เล่นเพลง";
+        btn.onclick = () => {
+            bgm.play();
+            btn.remove();
+        };
+        document.body.insertBefore(btn, document.body.firstChild);
+    });
+});
+</script>
+
+</body>
+</html>
