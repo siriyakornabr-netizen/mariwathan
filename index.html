@@ -8,17 +8,37 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Noto Sans Thai', sans-serif; background: linear-gradient(180deg, #f6cade, #cfe6ff, #fff4e6); margin: 0; text-align: center; }
+    body {
+      font-family: 'Noto Sans Thai', sans-serif;
+      margin: 0;
+      text-align: center;
+      background: linear-gradient(180deg, #f6cade 0%, #cfe6ff 50%, #fff4e6 100%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
     .hero { padding: 50px 20px; }
     h1 { margin: 0; font-size: 2em; }
     .msg { font-size: 1.5em; margin: 20px 0; }
     .btn, .chip { background: #ead1dc; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin: 5px; }
     footer { margin-top: 40px; color: #7b6e68; }
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      font-size: 24px;
+      animation: floatUp 6s linear forwards;
+      color: rgba(255,105,180,0.8);
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-120vh) scale(1.8); opacity: 0; }
+    }
   </style>
 </head>
 <body>
   <audio id="bgm" src="music.mp3" autoplay loop preload="auto" playsinline></audio>
   <audio id="clickSound" src="click.mp3" preload="auto"></audio>
+  <audio id="cuteSound" src="cute.mp3" preload="auto"></audio>
 
   <div class="hero">
     <h1>ถึง <strong>น้องแมวน้อย</strong> (มู้จู้) จาก <strong>เค้า</strong></h1>
@@ -58,11 +78,33 @@
     const closeModal = document.getElementById('closeModal');
     const bgm = document.getElementById('bgm');
     const clickSound = document.getElementById('clickSound');
+    const cuteSound = document.getElementById('cuteSound');
     const musicBtn = document.getElementById('musicBtn');
 
-    function playClick(){ clickSound.currentTime = 0; clickSound.play(); }
+    function playClick(){
+      clickSound.currentTime = 0;
+      clickSound.play();
+      playCute();
+      spawnHeart();
+    }
+
+    function playCute(){
+      cuteSound.currentTime = 0;
+      cuteSound.play();
+    }
+
     function pickMessage(){ return messages[Math.floor(Math.random()*messages.length)]; }
     function setMessage(){ msgEl.textContent = pickMessage(); }
+
+    function spawnHeart(){
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (3 + Math.random() * 3) + 's';
+      heart.textContent = '❤';
+      document.body.appendChild(heart);
+      setTimeout(()=>heart.remove(), 6000);
+    }
 
     setMessage();
     nextBtn.addEventListener('click', ()=>{ playClick(); setMessage(); });
