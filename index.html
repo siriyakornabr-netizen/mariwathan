@@ -1,124 +1,79 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เว็บกำลังใจน้องแมวน้อย</title>
-<style>
-    body {
-        font-family: 'Comic Sans MS', cursive;
-        background: linear-gradient(to bottom, #fff0f5, #ffe4e1);
-        text-align: center;
-        padding: 20px;
-    }
-    h1 {
-        color: #ff69b4;
-        margin-bottom: 10px;
-    }
-    button {
-        background-color: #ffb6c1;
-        border: none;
-        padding: 10px 20px;
-        margin: 10px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    button:hover {
-        background-color: #ff91a4;
-    }
-    .heart {
-        position: fixed;
-        bottom: -20px;
-        color: #ff69b4;
-        animation: floatUp 5s linear infinite;
-        font-size: 20px;
-    }
-    @keyframes floatUp {
-        0% {transform: translateY(0);}
-        100% {transform: translateY(-100vh); opacity: 0;}
-    }
-    .memory, .secret, .countdown {
-        background: white;
-        padding: 15px;
-        margin: 15px auto;
-        border-radius: 15px;
-        width: 80%;
-        box-shadow: 0 0 10px rgba(255,182,193,0.5);
-    }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>กำลังใจให้น้องแมวน้อย | จากเค้า</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans Thai', sans-serif; background: linear-gradient(180deg, #f6cade, #cfe6ff, #fff4e6); margin: 0; text-align: center; }
+    .hero { padding: 50px 20px; }
+    h1 { margin: 0; font-size: 2em; }
+    .msg { font-size: 1.5em; margin: 20px 0; }
+    .btn, .chip { background: #ead1dc; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin: 5px; }
+    footer { margin-top: 40px; color: #7b6e68; }
+  </style>
 </head>
 <body>
+  <audio id="bgm" src="music.mp3" autoplay loop preload="auto" playsinline></audio>
+  <audio id="clickSound" src="click.mp3" preload="auto"></audio>
 
-<h1>วันนี้น้องแมวน้อยเค้าเก่งมากแล้วนะ</h1>
+  <div class="hero">
+    <h1>ถึง <strong>น้องแมวน้อย</strong> (มู้จู้) จาก <strong>เค้า</strong></h1>
+    <p>โทนชมพูพาสเทล × ฟ้าพาสเทล × ครีมพาสเทล</p>
+    <div>
+      <button id="musicBtn" class="chip">ปิดเพลงคลอ</button>
+      <button id="surpriseBtn" class="chip">คลิกเพื่อรับกำลังใจ</button>
+    </div>
+  </div>
 
-<!-- เพลงคลอ -->
-<audio id="bgm" loop>
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_bf82466f4f.mp3?filename=beautiful-relaxing-music-112199.mp3" type="audio/mpeg">
-</audio>
+  <div class="msg" id="message">กำลังโหลดกำลังใจ...</div>
+  <div>
+    <button id="nextBtn" class="btn">ข้อความถัดไป</button>
+  </div>
 
-<!-- ปุ่มสุ่มกำลังใจ -->
-<button onclick="showMessage()">สุ่มให้กำลังใจ</button>
-<p id="message"></p>
+  <footer>ทำด้วยรักให้ <strong>น้องแมวน้อย/มู้จู้</strong> จาก <strong>เค้า</strong></footer>
 
-<!-- ความทรงจำ -->
-<div class="memory">
-    <h2>ความทรงจำ</h2>
-    <ul>
-        <li>โดนด่า</li>
-        <li>โดนด่า</li>
-        <li>หนูโดนด่า</li>
-    </ul>
-</div>
+  <dialog id="modal">
+    <div>
+      <p id="modalText">มู้จู้เก่งที่สุดในโลกเลย</p>
+      <button id="closeModal" class="btn">รับทราบค้าบ</button>
+    </div>
+  </dialog>
 
-<!-- นับถอยหลัง -->
-<div class="countdown">
-    <h2>Everydays 💖</h2>
-    <p>ทุกวันคือวันสำคัญของเรา</p>
-</div>
+  <script>
+    const messages = [
+      "อาทิตย์นี้มู้เค้าเก่งมากๆคับป๋ม",
+      "เก่งมากค้าบ",
+      "พักกันนะ",
+      "น่ารักจังมู้ของเค้า"
+    ];
 
-<!-- ข้อความลับ -->
-<div class="secret">
-    <h2>ข้อความลับ</h2>
-    <button onclick="alert('ถ้าทุกคนเป็นความลับ งั้นเธอนั้นคือหมาของเค้า อะไรอ่ะ555')">กดเพื่อดู</button>
-</div>
+    const msgEl = document.getElementById('message');
+    const nextBtn = document.getElementById('nextBtn');
+    const surpriseBtn = document.getElementById('surpriseBtn');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const bgm = document.getElementById('bgm');
+    const clickSound = document.getElementById('clickSound');
+    const musicBtn = document.getElementById('musicBtn');
 
-<script>
-function showMessage() {
-    document.getElementById("message").innerText = "เธอเป็นน้องแมวน้อย";
-}
+    function playClick(){ clickSound.currentTime = 0; clickSound.play(); }
+    function pickMessage(){ return messages[Math.floor(Math.random()*messages.length)]; }
+    function setMessage(){ msgEl.textContent = pickMessage(); }
 
-// สร้างหัวใจลอย
-function createHeart() {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerHTML = "💖";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 20 + 10 + "px";
-    document.body.appendChild(heart);
+    setMessage();
+    nextBtn.addEventListener('click', ()=>{ playClick(); setMessage(); });
+    surpriseBtn.addEventListener('click', ()=>{ playClick(); document.getElementById('modalText').textContent = pickMessage(); modal.showModal(); });
+    closeModal.addEventListener('click', ()=>{ playClick(); modal.close(); });
 
-    setTimeout(() => {
-        heart.remove();
-    }, 5000);
-}
-setInterval(createHeart, 500);
-
-// เพลงคลอเบา ๆ
-document.addEventListener("DOMContentLoaded", function() {
-    const bgm = document.getElementById("bgm");
-    bgm.volume = 0.2; // เสียงเบา
-    bgm.play().catch(() => {
-        // ถ้า autoplay ไม่ได้ ให้กดปุ่มเอง
-        const btn = document.createElement("button");
-        btn.innerText = "▶ เล่นเพลง";
-        btn.onclick = () => {
-            bgm.play();
-            btn.remove();
-        };
-        document.body.insertBefore(btn, document.body.firstChild);
+    musicBtn.addEventListener('click', ()=>{
+      playClick();
+      if(bgm.paused){ bgm.play(); musicBtn.textContent = 'ปิดเพลงคลอ'; }
+      else { bgm.pause(); musicBtn.textContent = 'เปิดเพลงคลอ'; }
     });
-});
-</script>
-
+  </script>
 </body>
 </html>
