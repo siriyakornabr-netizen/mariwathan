@@ -1,86 +1,236 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>กำลังใจให้น้องแมวน้อย | จากเค้า</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>ให้กำลังใจแฟน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Noto Sans Thai', sans-serif; margin: 0; text-align: center; background: linear-gradient(180deg, #f6cade 0%, #cfe6ff 50%, #fff4e6 100%); background-attachment: fixed; overflow-x: hidden; }
-    .hero { padding: 50px 20px; }
-    h1 { margin: 0; font-size: 2em; }
-    .msg { font-size: 1.5em; margin: 20px 0; }
-    .btn, .chip { background: #ead1dc; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin: 5px; }
-    footer { margin-top: 40px; color: #7b6e68; }
-    .heart { position: fixed; bottom: -20px; font-size: 24px; animation: floatUp 6s linear forwards; color: rgba(255,105,180,0.8); pointer-events: none; }
-    @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
+    body {
+      font-family: "Prompt", sans-serif;
+      background: #fbeff2;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #fa9fbf;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+    header h1 { margin-bottom: 10px; }
+    #player { margin-top: 10px; }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: 40px auto 20px auto;
+      padding: 0 20px;
+    }
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    #message-box {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      font-size: 1.2rem;
+      text-align: center;
+    }
+    button {
+      margin-top: 30px;
+      padding: 10px 25px;
+      font-size: 1rem;
+      border: none;
+      color: white;
+      background: #fa9fbf;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+    footer {
+      text-align: center;
+      margin: 40px 0;
+      color: #888;
+    }
+
+    /* ---- BLUR ON LOAD (พื้นหลังเบลอตอนเข้า) ---- */
+    #page-content{
+      filter: blur(8px);
+      transform: scale(1.02);
+      transition: filter .35s ease, transform .35s ease;
+    }
+    #page-content.is-unblurred{
+      filter: none;
+      transform: none;
+    }
+
+    /* แผ่นปิดเรียกเปิดเสียง เมื่อออโต้เพลย์ถูกบล็อก */
+    #unmute-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;              /* จะโชว์เฉพาะตอนถูกบล็อก */
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+    }
+    #unmute-overlay .panel {
+      background: #fff;
+      padding: 22px 26px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    #unmute-overlay .panel p {
+      margin: 0 0 12px 0;
+      font-weight: 600;
+    }
+    #unmute-btn {
+      margin: 0;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: #fa9fbf;
+      color: #fff;
+      border: 0;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <audio id="bgm" src="music.mp3" autoplay loop preload="auto" playsinline></audio>
-  <audio id="clickSound" src="click.mp3" preload="auto"></audio>
-  <audio id="cuteSound" src="cute.mp3" preload="auto"></audio>
 
-  <div class="hero">
-    <h1>ถึง <strong>น้องแมวน้อย</strong> (มู้จู้) จาก <strong>เค้า</strong></h1>
-    <p>โทนชมพูพาสเทล × ฟ้าพาสเทล × ครีมพาสเทล</p>
-    <div>
-      <button id="musicBtn" class="chip">ปิดเพลงคลอ</button>
-      <button id="surpriseBtn" class="chip">คลิกเพื่อรับกำลังใจ</button>
+  <!-- START: เนื้อหาที่จะเบลอ -->
+  <div id="page-content">
+
+    <header>
+      <h1>กำลังใจสำหรับที่รัก ❤️</h1>
+      <!-- พยายามเล่นทันที -->
+      <audio id="player" controls autoplay playsinline preload="auto">
+        <source src="music/your-music-file.mp3" type="audio/mpeg" />
+        เบราว์เซอร์ของคุณไม่รองรับการเล่นเพลง
+      </audio>
+    </header>
+
+    <!-- แกลเลอรีแสดงภาพ -->
+    <section class="gallery">
+      <img src="images/pic1.jpg" alt="รูปแฟน" />
+      <img src="images/pic2.jpg" alt="รูปแฟน" />
+      <img src="images/pic3.jpg" alt="รูปแฟน" />
+    </section>
+
+    <!-- กล่องข้อความและปุ่มสุ่ม -->
+    <div id="message-box">
+      <p id="message">กดปุ่มด้านล่างเพื่อรับกำลังใจจากคนสำคัญ :)</p>
+      <button onclick="showMessage()">รับกำลังใจ!</button>
+    </div>
+
+    <footer>
+      หมากำลังให้กำลังใจนะ 🐶
+    </footer>
+
+  </div>
+  <!-- END: เนื้อหาที่จะเบลอ -->
+
+  <!-- แผ่นปิดสำหรับกรณีออโต้เพลย์ถูกบล็อก (อยู่นอก #page-content เพื่อไม่ถูกเบลอ) -->
+  <div id="unmute-overlay">
+    <div class="panel">
+      <p>เปลี่ยน สำหรับคนน่ารัก และคนเก่ง marisa sukthai❤ 🎵</p>
+      <button id="unmute-btn">เล่นเพลง</button>
     </div>
   </div>
-
-  <div class="msg" id="message">กำลังโหลดกำลังใจ...</div>
-  <div>
-    <button id="nextBtn" class="btn">ข้อความถัดไป</button>
-  </div>
-
-  <footer>ทำด้วยรักให้ <strong>น้องแมวน้อย/มู้จู้</strong> จาก <strong>เค้า</strong></footer>
-
-  <dialog id="modal">
-    <div>
-      <p id="modalText">มู้จู้เก่งที่สุดในโลกเลย</p>
-      <button id="closeModal" class="btn">รับทราบค้าบ</button>
-    </div>
-  </dialog>
 
   <script>
-    const messages = ["อาทิตย์นี้มู้เค้าเก่งมากๆคับป๋ม","เก่งมากค้าบ","พักกันนะ","น่ารักจังมู้ของเค้า"];
-    const msgEl = document.getElementById('message');
-    const nextBtn = document.getElementById('nextBtn');
-    const surpriseBtn = document.getElementById('surpriseBtn');
-    const modal = document.getElementById('modal');
-    const closeModal = document.getElementById('closeModal');
-    const bgm = document.getElementById('bgm');
-    const clickSound = document.getElementById('clickSound');
-    const cuteSound = document.getElementById('cuteSound');
-    const musicBtn = document.getElementById('musicBtn');
+    // ข้อความจากคุณแฟน
+    const familyMessages = [
+      "วันนี้เก่งมากคับ รักนะเข้าใจไหม มั๊วะ❤️",
+      "เค้าภูมิใจในตัวหมา ",
+      "ที่รักเก่งมากค้าบ ไม่เปงใยนะ",
+      "เค้าเปงหมาๆของเธอนะ หางเค้ากระดิกเลยแหละสู้ๆ"
+    ];
 
-    function playClick(){ clickSound.currentTime = 0; clickSound.play(); playCute(); spawnHeart(); }
-    function playCute(){ cuteSound.currentTime = 0; cuteSound.play(); }
-    function pickMessage(){ return messages[Math.floor(Math.random()*messages.length)]; }
-    function setMessage(){ msgEl.textContent = pickMessage(); }
-    function spawnHeart(){ const heart = document.createElement('div'); heart.className = 'heart'; heart.style.left = Math.random() * 100 + 'vw'; heart.style.animationDuration = (3 + Math.random() * 3) + 's'; heart.textContent = '❤'; document.body.appendChild(heart); setTimeout(()=>heart.remove(), 6000); }
+    // ข้อความจากโลก
+    const coworkersMessages = [
+      "ขอบคุณที่อดทนนะ เดี่ยวมันก็ผ่านไปคับป๋ม",
+      "ถึงตอนนี้โลกกำลังใจร้ายกับที่รัก แต่เดี๋ยวโลกได้โดนดีแน่!",
+      "เรารู้ว่าคุณทำได้ เก่งอยู่แล้ว",
+      "ขอบคุณที่เป็นพลังบวกให้เราเสมอ ❤️"
+    ];
 
-    setMessage();
-    nextBtn.addEventListener('click', ()=>{ playClick(); setMessage(); });
-    surpriseBtn.addEventListener('click', ()=>{ playClick(); document.getElementById('modalText').textContent = pickMessage(); modal.showModal(); });
-    closeModal.addEventListener('click', ()=>{ playClick(); modal.close(); });
-    musicBtn.addEventListener('click', ()=>{ playClick(); if(bgm.paused){ bgm.play(); musicBtn.textContent = 'ปิดเพลงคลอ'; } else { bgm.pause(); musicBtn.textContent = 'เปิดเพลงคลอ'; } });
+    // รวมข้อความทั้งหมด
+    const allMessages = [...familyMessages, ...coworkersMessages];
 
-    // Force play on load if allowed by browser
-    window.addEventListener('load', () => {
-      bgm.volume = 0.08;
-      bgm.muted = false;
-      bgm.play().catch(()=>{
-        // If blocked, try again on first interaction
-        const resume = () => { bgm.play(); document.removeEventListener('click', resume); document.removeEventListener('touchstart', resume); };
-        document.addEventListener('click', resume);
-        document.addEventListener('touchstart', resume);
+    function showMessage() {
+      const randomIndex = Math.floor(Math.random() * allMessages.length);
+      document.getElementById("message").textContent = allMessages[randomIndex];
+    }
+
+    // --------- ออโต้เพลย์ + เฟดอินเสียง + เลิกเบลอเมื่อเล่นได้ ----------
+    document.addEventListener("DOMContentLoaded", () => {
+      const audio = document.getElementById("player");
+      const overlay = document.getElementById("unmute-overlay");
+      const unmuteBtn = document.getElementById("unmute-btn");
+      const page = document.getElementById("page-content");
+
+      // ถ้าเบราว์เซอร์เริ่มเล่นเองอยู่แล้ว ให้เลิกเบลอทันทีเมื่อเกิด event
+      const unblur = () => page.classList.add("is-unblurred");
+      audio.addEventListener("playing", unblur, { once: true });
+      audio.addEventListener("play", unblur, { once: true });
+
+      // ฟังก์ชันเริ่มเล่นและค่อยๆ เพิ่มเสียง
+      const startMusic = () => {
+        if (!audio.paused) {
+          // กรณีเล่นอยู่แล้ว ก็เลิกเบลอไว้ก่อน (กันพลาด)
+          page.classList.add("is-unblurred");
+          return;
+        }
+        audio.volume = 0; // เริ่มเบาๆ
+        const playPromise = audio.play();
+
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            overlay.style.display = "none";
+            page.classList.add("is-unblurred"); // เล่นได้แล้ว ค่อยเอาเบลอออก
+
+            // เฟดอินขึ้นจนถึง 1 ภายใน ~3 วินาที
+            const step = 0.02;     // เพิ่มทีละ 0.02
+            const interval = 60;   // ทุก 60 มิลลิวินาที
+            const fader = setInterval(() => {
+              if (audio.volume < 1) {
+                audio.volume = Math.min(1, +(audio.volume + step).toFixed(2));
+              } else {
+                clearInterval(fader);
+              }
+            }, interval);
+          }).catch(() => {
+            // ถ้าถูกบล็อกออโต้เพลย์ ให้โชว์แผ่นปิด (ยังคงเบลอไว้)
+            overlay.style.display = "flex";
+          });
+        }
+      };
+
+      // พยายามเล่นทันทีเมื่อโหลดเสร็จ
+      startMusic();
+
+      // ถ้าออโต้เพลย์ถูกบล็อก ให้กดปุ่มเพื่อเริ่ม
+      unmuteBtn.addEventListener("click", startMusic);
+
+      // เผื่อบางเบราว์เซอร์ ต้องมี user gesture ก่อน
+      ["click", "touchstart", "keydown"].forEach(evt => {
+        window.addEventListener(evt, startMusic, { once: true });
       });
     });
   </script>
+
 </body>
 </html>
